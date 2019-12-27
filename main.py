@@ -159,7 +159,7 @@ def generate_visual():
     pygame.draw.rect(window, (100, 100, 100), ((150, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((270, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((390, 420), (100, 50)))
-    pygame.draw.rect(window, (100, 100, 100), ((510, 420), (100, 50)))
+    # pygame.draw.rect(window, (100, 100, 100), ((510, 420), (100, 50)))
 
     myfont = pygame.font.SysFont('', 25)
     textsurface = myfont.render('Easy', False, (0, 0, 0))
@@ -170,8 +170,8 @@ def generate_visual():
     window.blit(textsurface, (275, 435))
     textsurface = myfont.render('Expert', False, (0, 0, 0))
     window.blit(textsurface, (395, 435))
-    textsurface = myfont.render('Master', False, (0, 0, 0))
-    window.blit(textsurface, (515, 435))
+    # textsurface = myfont.render('Master', False, (0, 0, 0))
+    # window.blit(textsurface, (515, 435))
 
     return visual
 
@@ -205,16 +205,16 @@ def check_win(vb):
         return 1
 
 def mode(x):
-    if x == 0:
-        return 9, 9, 10
     if x == 1:
-        return 16, 16, 40
+        return 9, 9, 10
     if x == 2:
+        return 16, 16, 40
+    if x == 3:
         return 16, 30, 99
-    if x == 3:
+    if x == 4:
         return 20, 30, 145
-    if x == 3:
-        return 25, 35, 200
+    # if x == 5:
+    #     return 25, 35, 200
 
 size = 16
 x_offset = 20
@@ -248,26 +248,36 @@ while run:
                 DIFFICULTY = 1
                 GAME_MODE = 0
                 BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                VISUAL_BOARD = generate_visual()
+                draw_board()
             elif (row, col) == (-2, 0):
-                print('mediam')
+                print('medium')
                 DIFFICULTY = 2
                 GAME_MODE = 0
                 BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                VISUAL_BOARD = generate_visual()
+                draw_board()
             elif (row, col) == (-3, 0):
                 print('hard')
                 DIFFICULTY = 3
                 GAME_MODE = 0
                 BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                VISUAL_BOARD = generate_visual()
+                draw_board()
             elif (row, col) == (-4, 0):
                 print('expert')
                 DIFFICULTY = 4
                 GAME_MODE = 0
                 BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
-            elif (row, col) == (-5, 0):
-                print('master')
-                DIFFICULTY = 5
-                GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                VISUAL_BOARD = generate_visual()
+                draw_board()
+            # elif (row, col) == (-5, 0):
+            #     print('master')
+            #     DIFFICULTY = 5
+            #     GAME_MODE = 0
+            #     BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+            #     VISUAL_BOARD = generate_visual()
+            #     draw_board()
 
             elif row in range(BOARD_WIDTH) and col in range(BOARD_HEIGHT):
                 if event.button == 1:
