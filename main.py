@@ -1,15 +1,16 @@
-# Board Legend
-
+# Imports
 import pygame
 import os
 import random
+
+# Inits
 pygame.init()
 pygame.font.init()
 font = pygame.font.Font('freesansbold.ttf', 32)
-
 window = pygame.display.set_mode((640, 480))
 pygame.display.set_caption("Minesweeper")
 
+# Importing Assets
 block = pygame.image.load(os.path.join('assets/block.png'))
 flag = pygame.image.load(os.path.join('assets/flag.png'))
 bombs = [pygame.image.load(os.path.join('assets/bomb1.png')),
@@ -30,7 +31,8 @@ smiles = [pygame.image.load(os.path.join('assets/smile1.png')),
           pygame.image.load(os.path.join('assets/smile4.png')),
           pygame.image.load(os.path.join('assets/smile5.png'))]
 
-
+# Generates new board after user has clicked a tile.
+# Returns populated gameboard.
 def generate_new_board(cx, cy):
     game = []
 
@@ -59,7 +61,7 @@ def generate_new_board(cx, cy):
 
     return game, 1
 
-
+# Draws visual board
 def draw_board():
 
     if GAME_MODE in [0, 1]:
@@ -100,6 +102,8 @@ def draw_board():
             elif VISUAL_BOARD[row][col] == 8:
                 window.blit(numbers[8], ((row * size) + x_offset, (col * size) + y_offset))
 
+
+# Hit detection for cells, returns a tuple which is either a reset, difficulty change, or game tile
 def get_clicked_cell():
     x, y = pygame.mouse.get_pos()
 
@@ -121,6 +125,7 @@ def get_clicked_cell():
         return row, col
 
 
+# When user right clicks a tile, this function toggles a flag
 def flag_board(row, col):
     if VISUAL_BOARD[row][col] == 10:
         VISUAL_BOARD[row][col] = 11
@@ -128,6 +133,7 @@ def flag_board(row, col):
         VISUAL_BOARD[row][col] = 10
 
 
+# Updates board after user action
 def update_board(row, col):
     if VISUAL_BOARD[row][col] == 10 and GAME_GRID[row][col] == 0:
         VISUAL_BOARD[row][col] = 0
@@ -145,6 +151,8 @@ def update_board(row, col):
     else:
         return 1
 
+
+# Creates visual board
 def generate_visual():
     visual = []
     for row in range(BOARD_WIDTH):
@@ -169,6 +177,7 @@ def generate_visual():
     return visual
 
 
+# Handles middle clicking tile to automatically clear multiple tiles if there is a neighboring flag
 def clear_space(row, col):
     flag_count = 0
     if GAME_GRID[row][col] in range(1, 9):
@@ -191,6 +200,7 @@ def clear_space(row, col):
                         update_board(x, y)
 
 
+# Checks if win condition is met
 def check_win(vb):
     clears = 0
     for row in range(BOARD_WIDTH):
@@ -202,6 +212,7 @@ def check_win(vb):
     else:
         return 1
 
+# returns game parameters based on difficulty setting, higher is harder
 def mode(x):
     if x == 1:
         return 9, 9, 10
@@ -212,6 +223,20 @@ def mode(x):
     if x == 4:
         return 20, 30, 145
 
+def change_difficulty(x):
+    global GAME_MODE
+    global BOARD_HEIGHT
+    global BOARD_WIDTH
+    global MINES
+    global VISUAL_BOARD
+
+    GAME_MODE = 0
+    BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(x)
+    pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
+    VISUAL_BOARD = generate_visual()
+    draw_board()
+
+# Global amestate variables
 size = 16
 x_offset = 20
 y_offset = 70
@@ -223,6 +248,7 @@ GAME_GRID = []
 VISUAL_BOARD = generate_visual()
 draw_board()
 
+# Game loop
 while run:
     pygame.time.delay(1)
     for event in pygame.event.get():
@@ -237,32 +263,16 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONUP:
             row, col = get_clicked_cell()
-            if (row, col) ==   (-1, -1):
+            if (row, col) == (-1, -1):
                 GAME_MODE = 0
             elif (row, col) == (-1, 0):
-                GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(1)
-                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
-                VISUAL_BOARD = generate_visual()
-                draw_board()
+                change_difficulty(1)
             elif (row, col) == (-2, 0):
-                GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(2)
-                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
-                VISUAL_BOARD = generate_visual()
-                draw_board()
+                change_difficulty(2)
             elif (row, col) == (-3, 0):
-                GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(3)
-                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
-                VISUAL_BOARD = generate_visual()
-                draw_board()
+                change_difficulty(3)
             elif (row, col) == (-4, 0):
-                GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(4)
-                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
-                VISUAL_BOARD = generate_visual()
-                draw_board()
+                change_difficulty(4)
 
             elif row in range(BOARD_WIDTH) and col in range(BOARD_HEIGHT):
                 if event.button == 1:
