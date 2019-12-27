@@ -113,8 +113,6 @@ def get_clicked_cell():
         return -3, 0
     elif x in range(390, 490) and y in range(420, 470):
         return -4, 0
-    elif x in range(510, 610) and y in range(420, 470):
-        return -5, 0
 
 
     else:
@@ -131,22 +129,21 @@ def flag_board(row, col):
 
 
 def update_board(row, col):
-    if VISUAL_BOARD[row][col] == 10:
-        if GAME_GRID[row][col] == 0:
-            VISUAL_BOARD[row][col] = 0
-            for x in range(row - 1, row + 2):
-                for y in range(col - 1, col + 2):
-                    if (x != row or y != col) and x in range(BOARD_WIDTH) and y in range(BOARD_HEIGHT):
-                        update_board(x, y)
+    if VISUAL_BOARD[row][col] == 10 and GAME_GRID[row][col] == 0:
+        VISUAL_BOARD[row][col] = 0
+        for x in range(row - 1, row + 2):
+            for y in range(col - 1, col + 2):
+                if (x != row or y != col) and x in range(BOARD_WIDTH) and y in range(BOARD_HEIGHT):
+                    update_board(x, y)
 
-        elif GAME_GRID[row][col] in range(1, 9):
-            VISUAL_BOARD[row][col] = GAME_GRID[row][col]
+    elif GAME_GRID[row][col] in range(1, 9):
+        VISUAL_BOARD[row][col] = GAME_GRID[row][col]
 
-        elif GAME_GRID[row][col] >= 10:
-            VISUAL_BOARD[row][col] = 103
-            return 2
-        else:
-            return 1
+    elif GAME_GRID[row][col] >= 10:
+        VISUAL_BOARD[row][col] = 103
+        return 2
+    else:
+        return 1
 
 def generate_visual():
     visual = []
@@ -159,8 +156,6 @@ def generate_visual():
     pygame.draw.rect(window, (100, 100, 100), ((150, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((270, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((390, 420), (100, 50)))
-    # pygame.draw.rect(window, (100, 100, 100), ((510, 420), (100, 50)))
-
     myfont = pygame.font.SysFont('', 25)
     textsurface = myfont.render('Easy', False, (0, 0, 0))
     window.blit(textsurface, (35, 435))
@@ -170,8 +165,6 @@ def generate_visual():
     window.blit(textsurface, (275, 435))
     textsurface = myfont.render('Expert', False, (0, 0, 0))
     window.blit(textsurface, (395, 435))
-    # textsurface = myfont.render('Master', False, (0, 0, 0))
-    # window.blit(textsurface, (515, 435))
 
     return visual
 
@@ -190,7 +183,12 @@ def clear_space(row, col):
             for y in range(col - 1, col + 2):
                 if (x != row or y != col) and x in range(BOARD_WIDTH) and y in range(BOARD_HEIGHT)\
                         and (VISUAL_BOARD[x][y] != 11):
-                    update_board(x, y)
+                    if GAME_GRID[x][y] >= 10:
+                        global GAME_MODE
+                        GAME_MODE = 2
+                        VISUAL_BOARD[x][y] = 102
+                    else:
+                        update_board(x, y)
 
 
 def check_win(vb):
@@ -213,8 +211,6 @@ def mode(x):
         return 16, 30, 99
     if x == 4:
         return 20, 30, 145
-    # if x == 5:
-    #     return 25, 35, 200
 
 size = 16
 x_offset = 20
@@ -244,40 +240,29 @@ while run:
             if (row, col) ==   (-1, -1):
                 GAME_MODE = 0
             elif (row, col) == (-1, 0):
-                print('easy')
-                DIFFICULTY = 1
                 GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(1)
+                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
                 VISUAL_BOARD = generate_visual()
                 draw_board()
             elif (row, col) == (-2, 0):
-                print('medium')
-                DIFFICULTY = 2
                 GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(2)
+                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
                 VISUAL_BOARD = generate_visual()
                 draw_board()
             elif (row, col) == (-3, 0):
-                print('hard')
-                DIFFICULTY = 3
                 GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(3)
+                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
                 VISUAL_BOARD = generate_visual()
                 draw_board()
             elif (row, col) == (-4, 0):
-                print('expert')
-                DIFFICULTY = 4
                 GAME_MODE = 0
-                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
+                BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(4)
+                pygame.draw.rect(window, (0, 0, 0), ((0, 0), (640, 480)))
                 VISUAL_BOARD = generate_visual()
                 draw_board()
-            # elif (row, col) == (-5, 0):
-            #     print('master')
-            #     DIFFICULTY = 5
-            #     GAME_MODE = 0
-            #     BOARD_HEIGHT, BOARD_WIDTH, MINES = mode(DIFFICULTY)
-            #     VISUAL_BOARD = generate_visual()
-            #     draw_board()
 
             elif row in range(BOARD_WIDTH) and col in range(BOARD_HEIGHT):
                 if event.button == 1:
@@ -293,6 +278,7 @@ while run:
                     clear_space(row, col)
                 if event.button == 3 and GAME_MODE == 1:
                     flag_board(row, col)
+                    GAME_MODE = check_win(VISUAL_BOARD)
 
             draw_board()
     pygame.display.update()
