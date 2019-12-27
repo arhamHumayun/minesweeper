@@ -29,25 +29,22 @@ smiles = [pygame.image.load(os.path.join('assets/smile1.png')),
           pygame.image.load(os.path.join('assets/smile5.png'))]
 
 
-def generate_new_board():
+def generate_new_board(cx, cy):
     game = []
-    visual = []
 
     for row in range(BOARD_WIDTH):
         game.append([])
-        visual.append([])
         for column in range(BOARD_HEIGHT):
             game[row].append(0)
-            visual[row].append(10)
 
     bombCount = 0
     while True:
         row = random.randint(0, BOARD_WIDTH - 1)
         col = random.randint(0, BOARD_HEIGHT - 1)
-        if game[row][col] != 10:
+        if game[row][col] != 10 and (row != cx or col != cy):
             game[row][col] = 10
             bombCount += 1
-            if bombCount > MINES:
+            if bombCount == MINES:
                 break
 
     for row in range(BOARD_WIDTH):
@@ -58,15 +55,20 @@ def generate_new_board():
                         if (x != row or y != col) and x in range(BOARD_WIDTH) and y in range(BOARD_HEIGHT):
                             game[x][y] += 1
 
-    return game, visual
+    global GAME_MODE
+    GAME_MODE = 1
+
+    return game
 
 
 def drawBoard():
 
-    if GAME_MODE == 4:
-        window.blit(smiles[5], (50, 20))
-    else:
+    if GAME_MODE in [0, 1]:
         window.blit(smiles[0], (50, 20))
+    elif GAME_MODE == 2:
+        window.blit(smiles[4], (50, 20))
+    elif GAME_MODE == 3:
+        window.blit(smiles[3], (50, 20))
 
     for row in range(BOARD_WIDTH):
         for col in range(BOARD_HEIGHT):
@@ -101,10 +103,14 @@ def drawBoard():
 
 def get_clicked_cell():
     x, y = pygame.mouse.get_pos()
-    row = (x - x_offset) // 16
-    col = (y - y_offset) // 16
-    print(row, col)
-    return row, col
+
+    if x in range(50, 77) and y in range (20, 47):
+        return -1, -1
+    else:
+        row = (x - x_offset) // 16
+        col = (y - y_offset) // 16
+        print(row, col)
+        return row, col
 
 
 def flag_board(row, col):
@@ -115,6 +121,7 @@ def flag_board(row, col):
 
 
 def update_board(row, col):
+
     if VISUAL_BOARD[row][col] == 10:
         if GAME_GRID[row][col] == 0:
             VISUAL_BOARD[row][col] = 0
@@ -128,33 +135,72 @@ def update_board(row, col):
 
         elif GAME_GRID[row][col] >= 10:
             VISUAL_BOARD[row][col] = 103
-            GAME_MODE = 4
+            global GAME_MODE
+            GAME_MODE = 2
 
+def generate_visual():
+    visual = []
+    for row in range(BOARD_WIDTH):
+        visual.append([])
+        for column in range(BOARD_HEIGHT):
+            visual[row].append(10)
+
+    return visual
+
+
+def check_win():
+    flags = 0
+    clears = 0
+    global GAME_MODE
+    global VISUAL_BOARD
+    for row in range(BOARD_WIDTH):
+        for col in range(BOARD_HEIGHT):
+            if VISUAL_BOARD[row][col] in range(0, 9):
+                clears += 1
+
+    if clears == (BOARD_HEIGHT * BOARD_WIDTH) - MINES:
+        global GAME_MODE
+        GAME_MODE = 4
 
 size = 16
 x_offset = 20
 y_offset = 70
-GAME_MODE = 0  # 0 - beginner, 1 - intermediate, 2 - expert, 3 - Win, 4 - Gameover
+GAME_MODE = 0 # 0 - fresh start, 1 - playing, 2 - gameover, 3 - win
 BOARD_WIDTH = 9
 BOARD_HEIGHT = 9
 MINES = 10
 run = True
-GAME_GRID, VISUAL_BOARD = generate_new_board()
+GAME_GRID = []
+VISUAL_BOARD = generate_visual()
+drawBoard()
 
 while run:
-    pygame.time.delay(10)
+    pygame.time.delay(1)
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
         mbs = pygame.mouse.get_pressed()
         if event.type == pygame.QUIT:
             run = False
 
+        if GAME_MODE == 0:
+            drawBoard()
+            VISUAL_BOARD = generate_visual()
+
         if event.type == pygame.MOUSEBUTTONUP:
             row, col = get_clicked_cell()
-            if row in range(BOARD_WIDTH) and col in range(BOARD_HEIGHT):
+            if (row, col) == (-1, -1):
+                GAME_MODE = 0
+
+            elif row in range(BOARD_WIDTH) and col in range(BOARD_HEIGHT):
                 if event.button == 1:
-                    update_board(row, col)
-                if event.button == 3:
+                    if GAME_MODE == 0:
+                        GAME_GRID = generate_new_board(row, col)
+                        VISUAL_BOARD = generate_visual()
+                        update_board(row, col)
+                    elif GAME_MODE == 1:
+                        update_board(row, col)
+                        check_win()
+                if event.button == 3 and GAME_MODE == 1:
                     flag_board(row, col)
 
             drawBoard()
