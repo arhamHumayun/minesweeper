@@ -6,11 +6,12 @@ import random
 # Inits
 pygame.init()
 pygame.font.init()
-font = pygame.font.Font('freesansbold.ttf', 32)
+# font = pygame.font.Font('freesansbold.ttf', 32)
 window = pygame.display.set_mode((640, 480))
 pygame.display.set_caption("Minesweeper")
 
 # Importing Assets
+
 block = pygame.image.load(os.path.join('assets/block.png'))
 flag = pygame.image.load(os.path.join('assets/flag.png'))
 bombs = [pygame.image.load(os.path.join('assets/bomb1.png')),
@@ -33,6 +34,7 @@ smiles = [pygame.image.load(os.path.join('assets/smile1.png')),
 
 # Generates new board after user has clicked a tile.
 # Returns populated gameboard.
+
 def generate_new_board(cx, cy):
     game = []
 
@@ -170,15 +172,15 @@ def generate_visual():
     pygame.draw.rect(window, (100, 100, 100), ((150, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((270, 420), (100, 50)))
     pygame.draw.rect(window, (100, 100, 100), ((390, 420), (100, 50)))
-    myfont = pygame.font.SysFont('', 25)
-    textsurface = myfont.render('Easy', False, (0, 0, 0))
-    window.blit(textsurface, (35, 435))
-    textsurface = myfont.render('Medium', False, (0, 0, 0))
-    window.blit(textsurface, (155, 435))
-    textsurface = myfont.render('Hard', False, (0, 0, 0))
-    window.blit(textsurface, (275, 435))
-    textsurface = myfont.render('Expert', False, (0, 0, 0))
-    window.blit(textsurface, (395, 435))
+    # myfont = pygame.font.SysFont('', 25)
+    # textsurface = myfont.render('Easy', False, (0, 0, 0))
+    # window.blit(textsurface, (35, 435))
+    # textsurface = myfont.render('Medium', False, (0, 0, 0))
+    # window.blit(textsurface, (155, 435))
+    # textsurface = myfont.render('Hard', False, (0, 0, 0))
+    # window.blit(textsurface, (275, 435))
+    # textsurface = myfont.render('Expert', False, (0, 0, 0))
+    # window.blit(textsurface, (395, 435))
 
     return visual
 
