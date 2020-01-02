@@ -146,11 +146,17 @@ def update_board(row, col):
         VISUAL_BOARD[row][col] = GAME_GRID[row][col]
 
     elif GAME_GRID[row][col] >= 10:
+        show_bombs()
         VISUAL_BOARD[row][col] = 103
         return 2
     else:
         return 1
 
+def show_bombs():
+    for row in range(BOARD_WIDTH):
+        for col in range(BOARD_HEIGHT):
+            if GAME_GRID[row][col] >= 10:
+                VISUAL_BOARD[row][col] = 101
 
 # Creates visual board
 def generate_visual():
