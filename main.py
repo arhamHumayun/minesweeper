@@ -5,13 +5,13 @@ import random
 
 # Inits
 pygame.init()
-pygame.font.init()
-# font = pygame.font.Font('freesansbold.ttf', 32)
 window = pygame.display.set_mode((640, 480))
 pygame.display.set_caption("Minesweeper")
 
-# Importing Assets
-
+text = [pygame.image.load(os.path.join('assets/easy.png')),
+        pygame.image.load(os.path.join('assets/medium.png')),
+        pygame.image.load(os.path.join('assets/hard.png')),
+        pygame.image.load(os.path.join('assets/expert.png'))]
 block = pygame.image.load(os.path.join('assets/block.png'))
 flag = pygame.image.load(os.path.join('assets/flag.png'))
 bombs = [pygame.image.load(os.path.join('assets/bomb1.png')),
@@ -63,8 +63,10 @@ def generate_new_board(cx, cy):
 
     return game, 1
 
+
 # Draws visual board
 def draw_board():
+    size = 16
 
     if GAME_MODE in [0, 1]:
         window.blit(smiles[0], (50, 20))
@@ -168,19 +170,10 @@ def generate_visual():
         for column in range(BOARD_HEIGHT):
             visual[row].append(10)
 
-    pygame.draw.rect(window, (100, 100, 100), ((30,  420), (100, 50)))
-    pygame.draw.rect(window, (100, 100, 100), ((150, 420), (100, 50)))
-    pygame.draw.rect(window, (100, 100, 100), ((270, 420), (100, 50)))
-    pygame.draw.rect(window, (100, 100, 100), ((390, 420), (100, 50)))
-    # myfont = pygame.font.SysFont('', 25)
-    # textsurface = myfont.render('Easy', False, (0, 0, 0))
-    # window.blit(textsurface, (35, 435))
-    # textsurface = myfont.render('Medium', False, (0, 0, 0))
-    # window.blit(textsurface, (155, 435))
-    # textsurface = myfont.render('Hard', False, (0, 0, 0))
-    # window.blit(textsurface, (275, 435))
-    # textsurface = myfont.render('Expert', False, (0, 0, 0))
-    # window.blit(textsurface, (395, 435))
+    window.blit(text[0], (30,  420))
+    window.blit(text[1], (150, 420))
+    window.blit(text[2], (270, 420))
+    window.blit(text[3], (390, 420))
 
     return visual
 
@@ -245,7 +238,6 @@ def change_difficulty(x):
     draw_board()
 
 # Global amestate variables
-size = 16
 x_offset = 20
 y_offset = 70
 GAME_MODE = 0 # 0 - fresh start, 1 - playing, 2 - gameover, 3 - win
